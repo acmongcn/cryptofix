@@ -1,82 +1,98 @@
-<script type="text/babel">
-  const { useState, useEffect } = React;
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoFix - Giá Tiền Điện Tử</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.9/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-  function App() {
-    const [coins, setCoins] = useState([]);
-    const [search, setSearch] = useState("");
-    const [error, setError] = useState(null);
+    function App() {
+      const [coins, setCoins] = useState([]);
+      const [search, setSearch] = useState("");
+      const [error, setError] = useState(null);
 
-    useEffect(() => {
-      axios
-        .get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=vnd&order=market_cap_desc&per_page=100&page=1")
-        .then((res) => setCoins(res.data))
-        .catch((error) => {
-          console.error("Lỗi khi lấy dữ liệu:", error);
-          setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
-        });
-    }, []);
+      useEffect(() => {
+        axios
+          .get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=vnd&order=market_cap_desc&per_page=100&page=1")
+          .then((res) => setCoins(res.data))
+          .catch((error) => {
+            console.error("Lỗi khi lấy dữ liệu:", error);
+            setError("Không thể tải dữ liệu từ API. Vui lòng thử lại sau.");
+          });
+      }, []);
 
-    const filteredCoins = coins.filter((coin) =>
-      coin.name.toLowerCase().includes(search.toLowerCase())
-    );
+      const filteredCoins = coins.filter((coin) =>
+        coin.name.toLowerCase().includes(search.toLowerCase())
+      );
 
-    return (
-      <div className="min-h-screen bg-gray-100 font-sans">
-        <header className="bg-blue-600 text-white p-4">
-          <h1 className="text-3xl font-bold text-center">CryptoFix</h1>
-          <p className="text-center">Theo dõi giá tiền điện tử thời gian thực</p>
-        </header>
-        <main className="container mx-auto p-4">
-          {error && <div className="text-red-500 text-center mb-4">{error}</div>}
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Tìm kiếm tiền điện tử..."
-              className="w-full p-2 border rounded"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white shadow-md rounded">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="p-2 text-left">#</th>
-                  <th className="p-2 text-left">Tên</th>
-                  <th className="p-2 text-right">Giá (VND)</th>
-                  <th className="p-2 text-right">Vốn hóa</th>
-                  <th className="p-2 text-right">Khối lượng 24h</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredCoins.map((coin, index) => (
-                  <tr key={coin.id} className="border-b">
-                    <td className="p-2">{index + 1}</td>
-                    <td className="p-2 flex items-center">
-                      <img src={coin.image} alt={coin.name} className="w-6 h-6 mr-2" />
-                      {coin.name}
-                    </td>
-                    <td className="p-2 text-right">
-                      {coin.current_price.toLocaleString("vi-VN")}
-                    </td>
-                    <td className="p-2 text-right">
-                      {coin.market_cap.toLocaleString("vi-VN")}
-                    </td>
-                    <td className="p-2 text-right">
-                      {coin.total_volume.toLocaleString("vi-VN")}
-                    </td>
+      return (
+        <div className="min-h-screen bg-gray-100 font-sans">
+          <header className="bg-blue-600 text-white p-4">
+            <h1 className="text-3xl font-bold text-center">CryptoFix</h1>
+            <p className="text-center">Theo dõi giá tiền điện tử thời gian thực</p>
+          </header>
+          <main className="container mx-auto p-4">
+            {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Tìm kiếm tiền điện tử..."
+                className="w-full p-2 border rounded"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full bg-white shadow-md rounded">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="p-2 text-left">#</th>
+                    <th className="p-2 text-left">Tên</th>
+                    <th className="p-2 text-right">Giá (VND)</th>
+                    <th className="p-2 text-right">Vốn hóa</th>
+                    <th className="p-2 text-right">Khối lượng 24h</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </main>
-        <footer className="bg-gray-800 text-white p-4 text-center">
-          <p>© 2025 CryptoFix. Tất cả quyền được bảo lưu.</p>
-        </footer>
-      </div>
-    );
-  }
+                </thead>
+                <tbody>
+                  {filteredCoins.map((coin, index) => (
+                    <tr key={coin.id} className="border-b">
+                      <td className="p-2">{index + 1}</td>
+                      <td className="p-2 flex items-center">
+                        <img src={coin.image} alt={coin.name} className="w-6 h-6 mr-2" />
+                        {coin.name}
+                      </td>
+                      <td className="p-2 text-right">
+                        {coin.current_price.toLocaleString("vi-VN")}
+                      </td>
+                      <td className="p-2 text-right">
+                        {coin.market_cap.toLocaleString("vi-VN")}
+                      </td>
+                      <td className="p-2 text-right">
+                        {coin.total_volume.toLocaleString("vi-VN")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </main>
+          <footer className="bg-gray-800 text-white p-4 text-center">
+            <p>© 2025 CryptoFix. Tất cả quyền được bảo lưu.</p>
+          </footer>
+        </div>
+      );
+    }
 
-  ReactDOM.render(<App />, document.getElementById("root"));
-</script>
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+</html>
